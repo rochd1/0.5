@@ -1,0 +1,137 @@
+import { useState } from "react";
+import MovieCard from "./MovieCard";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Filter } from "./Filter";
+import AddMovieModal from "./AddMovieModal";
+
+const MovieList = () => {
+  
+  const initialMovies = [
+  {
+    title: "The Shawshank Redemption",
+    description: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+    rating: 9.3
+  },
+  {
+    title: "The Godfather",
+    description: "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+    rating: 9.2
+  },
+  {
+    title: "The Dark Knight",
+    description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
+    rating: 9.0
+  },
+  {
+    title: "The Godfather Part II",
+    description: "The early life and career of Vito Corleone in 1920s New York is portrayed while his son, Michael, expands and tightens his grip on the family crime syndicate.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BMWMwMGQzZTItY2JlNC00OWZiLWIyMDctNDk2ZDQ2YjRjMWQ0XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+    rating: 9.0
+  },
+  {
+    title: "12 Angry Men",
+    description: "A jury holdout attempts to prevent a miscarriage of justice by forcing his colleagues to reconsider the evidence.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BMWU4N2FjNzYtNTVkNC00NzQ0LTg0MjAtYTJlMjFhNGUxZDFmXkEyXkFqcGdeQXVyNjc1NTYyMjg@._V1_.jpg",
+    rating: 9.0
+  },
+  {
+    title: "The Lord of the Rings: The Return of the King",
+    description: "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BNzA5ZDNlZWMtM2NhNS00NDJjLTk4NDItYTRmY2EwMWZlMTY3XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+    rating: 9.0
+  },
+  {
+    title: "Schindler's List",
+    description: "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BNDE4OTMxMTctNmRhYy00NWE2LTg3YzItYTk3M2UwOTU5Njg4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+    rating: 9.0
+  },
+  {
+    title: "Pulp Fiction",
+    description: "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
+    posterURL: "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+    rating: 8.8
+  }
+];
+
+ const [movies, setMovies] = useState(initialMovies);
+  const [filters, setFilters] = useState({
+    searchTerm: "",
+    minRating: 0
+  });
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const filteredMovies = Filter(movies, filters);
+
+  const handleAddMovie = (newMovie) => {
+    setMovies([newMovie , ...movies ]);
+    setShowAddModal(false);
+  };
+
+  return (
+    <Container className="my-4">
+      <div className="d-flex justify-content-end mb-4">
+        <Button 
+          variant="success" 
+          onClick={() => setShowAddModal(true)}
+          className="mb-3"
+        >
+          Add New Movie
+        </Button>
+      </div>
+
+      <Row className="mb-4">
+        <Col md={6} className="mb-3 mb-md-0">
+          <Form.Control
+            type="text"
+            placeholder="Search movies..."
+            value={filters.searchTerm}
+            onChange={(e) => setFilters({...filters, searchTerm: e.target.value})}
+          />
+        </Col>
+        <Col md={6}>
+          <Form.Select
+            value={filters.minRating}
+            onChange={(e) => setFilters({...filters, minRating: Number(e.target.value)})}
+          >
+            <option value={0}>All Ratings</option>
+            <option value={8}>8+ Stars</option>
+            <option value={8.5}>8.5+ Stars</option>
+            <option value={9}>9+ Stars</option>
+            <option value={9.5}>9.5+ Stars</option>
+          </Form.Select>
+        </Col>
+      </Row>
+
+      <Row xs={1} md={2} lg={3} className="g-4">
+        {filteredMovies.length > 0 ? (
+          filteredMovies.map((movie, index) => (
+            <Col key={index}>
+              <MovieCard 
+                title={movie.title}
+                description={movie.description}
+                posterURL={movie.posterURL}
+                rating={movie.rating}
+              />
+            </Col>
+          ))
+        ) : (
+          <Col className="text-center py-5">
+            <h4>No movies found matching your criteria</h4>
+          </Col>
+        )}
+      </Row>
+
+      <AddMovieModal 
+        show={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleAddMovie}
+      />
+    </Container>
+  );
+};
+
+export default MovieList;
